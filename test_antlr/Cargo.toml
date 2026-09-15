@@ -1,7 +1,0 @@
-[package]
-name = "test-antlr"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-antlr-rust-runtime = "0.34.0"
