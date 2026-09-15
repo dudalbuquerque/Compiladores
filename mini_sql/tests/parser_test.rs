@@ -5,7 +5,7 @@ use mini_sql::mini_sql_parser::MiniSqlParser;
 
 #[test]
 fn test_parser() {
-    let input = InputStream::new("SELECT WHERE FROM");
+    let input = InputStream::new("SELECT * FROM users;");
 
     let lexer = MiniSqlLexer::new(input);
 

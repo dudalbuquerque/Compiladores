@@ -21,25 +21,38 @@ use antlr4_runtime::generated::{__ActiveParserContext, __FromActiveRuleContext, 
 
 
 pub const EOF: i32 = antlr4_runtime::TOKEN_EOF;
-pub const SELECT: i32 = 1;
-pub const WHERE: i32 = 2;
-pub const FROM: i32 = 3;
-pub const NEWLINE: i32 = 4;
-pub const INT: i32 = 5;
-pub const FLOAT: i32 = 6;
-pub const STRING: i32 = 7;
-pub const BOOLEAN: i32 = 8;
-pub const COMMENT: i32 = 9;
+pub const T__0: i32 = 1;
+pub const SELECT: i32 = 2;
+pub const WHERE: i32 = 3;
+pub const FROM: i32 = 4;
+pub const ID: i32 = 5;
+pub const END: i32 = 6;
+pub const NEWLINE: i32 = 7;
+pub const INT: i32 = 8;
+pub const FLOAT: i32 = 9;
+pub const STRING: i32 = 10;
+pub const BOOLEAN: i32 = 11;
+pub const EQUAL: i32 = 12;
+pub const NOT_EQUAL: i32 = 13;
+pub const LESS: i32 = 14;
+pub const LESS_EQUAL: i32 = 15;
+pub const GREATER: i32 = 16;
+pub const GREATER_EQUAL: i32 = 17;
+pub const AND: i32 = 18;
+pub const OR: i32 = 19;
+pub const IN: i32 = 20;
+pub const COMMENT: i32 = 21;
 
 pub const RULE_PROGRAM: usize = 0;
 pub const RULE_QUERY: usize = 1;
+pub const RULE_CONDITION: usize = 2;
 
 pub static METADATA: GrammarMetadata = GrammarMetadata::new(
     "miniSQLParser",
-    &["program", "query"],
-    &[None, Some("\'SELECT\'"), Some("\'WHERE\'"), Some("\'FROM\'"), None, None, None, None, None, None],
-    &[None, Some("SELECT"), Some("WHERE"), Some("FROM"), Some("NEWLINE"), Some("Int"), Some("Float"), Some("String"), Some("Boolean"), Some("COMMENT")],
-    &[None, None, None, None, None, None, None, None, None, None],
+    &["program", "query", "condition"],
+    &[None, Some("\'*\'"), Some("\'SELECT\'"), Some("\'WHERE\'"), Some("\'FROM\'"), None, Some("\';\'"), None, None, None, None, None, Some("\'=\'"), Some("\'!=\'"), Some("\'<\'"), Some("\'<=\'"), Some("\'>\'"), Some("\'>=\'"), Some("\'AND\'"), Some("\'OR\'"), Some("\'IN\'"), None],
+    &[None, None, Some("SELECT"), Some("WHERE"), Some("FROM"), Some("ID"), Some("END"), Some("NEWLINE"), Some("INT"), Some("FLOAT"), Some("STRING"), Some("BOOLEAN"), Some("EQUAL"), Some("NOT_EQUAL"), Some("LESS"), Some("LESS_EQUAL"), Some("GREATER"), Some("GREATER_EQUAL"), Some("AND"), Some("OR"), Some("IN"), Some("COMMENT")],
+    &[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None],
     &[],
     &[],
     &[],
@@ -160,9 +173,32 @@ antlr4_runtime::__antlr4_rust_context! {
 
 antlr4_runtime::__antlr4_rust_context_accessors! {
     QueryContext {
-        token select_token: required(1, "SELECT"),
-        token where_token: required(2, "WHERE"),
-        token from_token: required(3, "FROM"),
+        token select_token: required(2, "SELECT"),
+        token from_token: required(4, "FROM"),
+        token id_tokens: many(5),
+        token end_token: required(6, "END"),
+    }
+}
+
+antlr4_runtime::__antlr4_rust_context! {
+    pub struct ConditionContext {
+        rule_index: 2,
+        context_kind: any,
+        validated_downcast: branded,
+        attributes: {
+        },
+        methods: {
+            rule_node: rule_node,
+            child_count: child_count,
+            direct_terminals: direct_terminals,
+            start: start,
+            text: text,
+        }
+    }
+}
+
+antlr4_runtime::__antlr4_rust_context_accessors! {
+    ConditionContext {
     }
 }
 
@@ -204,8 +240,11 @@ pub fn validate_tree_structure(
                 1 => {
                     let context = QueryContext::__from_listener_node(context, None);
         context.select_token()?;
-        context.where_token()?;
         context.from_token()?;
+        antlr4_runtime::require_min_count(context.id_tokens().count(), 1, "QueryContext", "ID")?;
+        context.end_token()?;
+                },
+                2 => {
                 },
                     _ => {
                         return Err(miniSQLValidationError::UnknownRule {
@@ -235,6 +274,8 @@ pub trait miniSQLListener<E = std::convert::Infallible> {
     fn exit_program(&mut self, _ctx: &ProgramContext) -> Result<(), E> { Ok(()) }
     fn enter_query(&mut self, _ctx: &QueryContext) -> Result<(), E> { Ok(()) }
     fn exit_query(&mut self, _ctx: &QueryContext) -> Result<(), E> { Ok(()) }
+    fn enter_condition(&mut self, _ctx: &ConditionContext) -> Result<(), E> { Ok(()) }
+    fn exit_condition(&mut self, _ctx: &ConditionContext) -> Result<(), E> { Ok(()) }
     fn visit_terminal(&mut self, _node: &TerminalNode) -> Result<(), E> { Ok(()) }
     fn visit_error_node(&mut self, _node: &ErrorNode) -> Result<(), E> { Ok(()) }
     fn output(&mut self) -> std::io::Stdout { std::io::stdout() }
@@ -248,6 +289,7 @@ antlr4_runtime::__antlr4_rust_generated_walk_callbacks! {
         match __context_kind(context) {
             0 => listener.enter_program(&ProgramContext::__from_listener_node(context, invocation_states))?,
             1 => listener.enter_query(&QueryContext::__from_listener_node(context, invocation_states))?,
+            2 => listener.enter_condition(&ConditionContext::__from_listener_node(context, invocation_states))?,
             _ => {}
         }
         Ok(())
@@ -256,6 +298,7 @@ antlr4_runtime::__antlr4_rust_generated_walk_callbacks! {
         match __context_kind(context) {
             0 => listener.exit_program(&ProgramContext::__from_listener_node(context, invocation_states))?,
             1 => listener.exit_query(&QueryContext::__from_listener_node(context, invocation_states))?,
+            2 => listener.exit_condition(&ConditionContext::__from_listener_node(context, invocation_states))?,
             _ => {}
         }
         listener.exit_every_rule(context)
@@ -316,6 +359,8 @@ pub trait miniSQLValidatedListener<E = std::convert::Infallible> {
     fn exit_program(&mut self, _ctx: &ProgramContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
     fn enter_query(&mut self, _ctx: &QueryContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
     fn exit_query(&mut self, _ctx: &QueryContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
+    fn enter_condition(&mut self, _ctx: &ConditionContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
+    fn exit_condition(&mut self, _ctx: &ConditionContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
     fn visit_terminal(&mut self, _node: &TerminalNode) -> Result<(), E> { Ok(()) }
     fn output(&mut self) -> std::io::Stdout { std::io::stdout() }
 }
@@ -328,6 +373,7 @@ antlr4_runtime::__antlr4_rust_generated_walk_callbacks! {
         match __context_kind(context) {
             0 => listener.enter_program(&ProgramContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
             1 => listener.enter_query(&QueryContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
+            2 => listener.enter_condition(&ConditionContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
             _ => {}
         }
         Ok(())
@@ -336,6 +382,7 @@ antlr4_runtime::__antlr4_rust_generated_walk_callbacks! {
         match __context_kind(context) {
             0 => listener.exit_program(&ProgramContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
             1 => listener.exit_query(&QueryContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
+            2 => listener.exit_condition(&ConditionContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
             _ => {}
         }
         listener.exit_every_rule(ValidatedRuleNode::__new(context))
@@ -382,7 +429,7 @@ pub type ValidatedParseTreeWalker = miniSQLValidatedTreeWalker;
 
 
 
-static PARSER_ATN_DATA: &[u32] = &[1346458702, 3, 16909060, 29, 9, 16, 15, 0, 0, 1, 2, 29, 112, 141, 75, 216, 0, 216, 0, 216, 1, 217, 2, 219, 2, 221, 0, 216, 0, 2, 0, 8, 0, 1, 4294967295, 4294967295, 7, 0, 16, 1, 0, 4294967295, 4294967295, 2, 1, 8, 1, 1, 4294967295, 4294967295, 7, 1, 24, 2, 1, 4294967295, 4294967295, 1, 0, 8, 3, 1, 4294967295, 4294967295, 4, 0, 8, 4, 1, 6, 4294967295, 8, 0, 8, 5, 1, 4294967295, 4294967295, 11, 0, 8, 6, 2, 4294967295, 4294967295, 12, 0, 8, 8, 1, 4294967295, 7, 1, 0, 32, 9, 1, 4294967295, 4294967295, 1, 0, 8, 10, 1, 4294967295, 4294967295, 1, 1, 32, 11, 1, 4294967295, 4294967295, 1, 1, 32, 12, 1, 4294967295, 4294967295, 1, 1, 32, 13, 1, 4294967295, 4294967295, 1, 1, 8, 14, 1, 4294967295, 4294967295, 1, 1, 0, 15, 0, 4294967295, 4294967295, 1, 5, 0, 0, 0, 1, 11, 0, 0, 0, 1, 6, 0, 0, 0, 3, 2, 1, 6, 0, 1, 4, 0, 0, 0, 1, 7, 0, 0, 0, 1, 5, 0, 0, 0, 1, 8, 0, 0, 0, 1, 9, 0, 0, 0, 5, 10, 4294967295, 0, 0, 1, 1, 0, 0, 0, 5, 12, 1, 0, 0, 5, 13, 2, 0, 0, 5, 14, 3, 0, 0, 1, 3, 0, 0, 0, 7, 0, 2, 1, 3];
+static PARSER_ATN_DATA: &[u32] = &[1346458702, 3, 16909060, 29, 21, 22, 20, 1, 2, 1, 3, 29, 154, 183, 100, 283, 5, 288, 4, 296, 1, 297, 3, 300, 3, 303, 2, 292, 4, 2, 0, 8, 0, 1, 4294967295, 4294967295, 7, 0, 16, 1, 0, 4294967295, 4294967295, 2, 1, 8, 1, 1, 4294967295, 4294967295, 7, 1, 24, 2, 1, 4294967295, 4294967295, 2, 2, 8, 3, 1, 4294967295, 4294967295, 7, 2, 16, 4, 0, 4294967295, 4294967295, 1, 0, 8, 4, 1, 4294967295, 4294967295, 4, 0, 8, 5, 1, 8, 4294967295, 8, 0, 8, 6, 1, 4294967295, 4294967295, 11, 0, 8, 7, 2, 4294967295, 4294967295, 12, 0, 8, 9, 1, 4294967295, 9, 1, 0, 32, 10, 1, 4294967295, 4294967295, 1, 0, 8, 11, 1, 4294967295, 4294967295, 1, 1, 32, 12, 1, 4294967295, 4294967295, 1, 1, 32, 13, 1, 4294967295, 4294967295, 1, 1, 32, 14, 1, 4294967295, 4294967295, 1, 1, 32, 15, 1, 4294967295, 4294967295, 1, 1, 32, 16, 1, 4294967295, 4294967295, 1, 1, 8, 17, 1, 4294967295, 4294967295, 1, 2, 8, 18, 1, 4294967295, 4294967295, 1, 2, 8, 19, 1, 4294967295, 4294967295, 1, 2, 0, 20, 0, 4294967295, 4294967295, 1, 7, 0, 0, 0, 1, 13, 0, 0, 0, 1, 8, 0, 0, 0, 1, 19, 0, 0, 0, 3, 2, 1, 8, 0, 1, 6, 0, 0, 0, 1, 9, 0, 0, 0, 1, 7, 0, 0, 0, 1, 10, 0, 0, 0, 1, 11, 0, 0, 0, 5, 12, 4294967295, 0, 0, 1, 1, 0, 0, 0, 5, 14, 2, 0, 0, 7, 15, 0, 0, 0, 5, 16, 4, 0, 0, 5, 17, 5, 0, 0, 5, 18, 6, 0, 0, 1, 3, 0, 0, 0, 1, 20, 0, 0, 0, 1, 5, 0, 0, 0, 0, 2, 1, 0, 2, 1, 1, 5, 5, 34, 0, 0, 0, 9, 0, 2, 4, 1, 3, 5];
 static ATN_CELL: OnceLock<ParserAtn> = OnceLock::new();
 
 /// Validates and caches the packed grammar ATN for all parser instances.
@@ -417,10 +464,12 @@ antlr4_runtime::__antlr4_rust_parser_entry_points! {
 ///
 /// Likely parser entry-rule methods:
 /// - `program()`
+/// - `condition()`
 ///
 /// All parser rule methods:
 /// - `program()`
 /// - `query()`
+/// - `condition()`
 #[derive(Debug)]
 pub struct MiniSqlParser<L, H = antlr4_runtime::NoSemanticHooks>
 where
@@ -459,9 +508,10 @@ where
         }
     }
 
-    const __GENERATED_RULE_BODIES: [Option<antlr4_runtime::generated::GeneratedRuleBody<Self>>; 2] = [
+    const __GENERATED_RULE_BODIES: [Option<antlr4_runtime::generated::GeneratedRuleBody<Self>>; 3] = [
         Some(Self::parse_generated_rule_0),
         Some(Self::parse_generated_rule_1),
+        Some(Self::parse_generated_rule_2),
     ];
 
     #[allow(dead_code)]
@@ -488,21 +538,21 @@ where
             bind (__ctx, __rule_start, __consumed_eof, __sync_error);
             setup {}
             body {
-                antlr4_runtime::__antlr4_rust_invoke_subrule!(self, 4isize, self.dispatch_generated_rule(1, 0, false).map_err(GeneratedRuleError::into_error), __ctx);
-                let mut __loop_iter_7 = true;
+                antlr4_runtime::__antlr4_rust_invoke_subrule!(self, 6isize, self.dispatch_generated_rule(1, 0, false).map_err(GeneratedRuleError::into_error), __ctx);
+                let mut __loop_iter_9 = true;
                 loop {
-                    self.base.sync_into(atn(), 7, &mut __ctx, __loop_iter_7, &mut __sync_error)?;
+                    self.base.sync_into(atn(), 9, &mut __ctx, __loop_iter_9, &mut __sync_error)?;
                     let __decision_start = antlr4_runtime::IntStream::index(self.base.input());
                     let __prediction = match self.base.la(1) {
-                        1 => antlr4_runtime::ParserAtnPrediction { alt: 1, requires_full_context: false, has_semantic_context: false, diagnostic: None },
+                        2 => antlr4_runtime::ParserAtnPrediction { alt: 1, requires_full_context: false, has_semantic_context: false, diagnostic: None },
                         -1 => antlr4_runtime::ParserAtnPrediction { alt: 2, requires_full_context: false, has_semantic_context: false, diagnostic: None },
                         _ => return Err(self.base.no_viable_alternative_error(__decision_start)),
                     };
-                    self.base.record_generated_prediction_diagnostic(atn(), 7, &__prediction);
+                    self.base.record_generated_prediction_diagnostic(atn(), 9, &__prediction);
                     match __prediction.alt {
                         1 => {
-                            __loop_iter_7 = true;
-                            antlr4_runtime::__antlr4_rust_invoke_subrule!(self, 4isize, self.dispatch_generated_rule(1, 0, false).map_err(GeneratedRuleError::into_error), __ctx);
+                            __loop_iter_9 = true;
+                            antlr4_runtime::__antlr4_rust_invoke_subrule!(self, 6isize, self.dispatch_generated_rule(1, 0, false).map_err(GeneratedRuleError::into_error), __ctx);
                         }
                         2 => {
                             break;
@@ -510,7 +560,7 @@ where
                         _ => return Err(self.base.no_viable_alternative_error(__decision_start)),
                     }
                 }
-                self.base.match_token_into(-1, 10, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_token_into(-1, 12, atn(), &mut __ctx, &mut __consumed_eof)?;
             }
             success {}
             recovery {}
@@ -526,9 +576,26 @@ where
             bind (__ctx, __rule_start, __consumed_eof, __sync_error);
             setup {}
             body {
-                self.base.match_token_into(1, 12, atn(), &mut __ctx, &mut __consumed_eof)?;
-                self.base.match_token_into(2, 13, atn(), &mut __ctx, &mut __consumed_eof)?;
-                self.base.match_token_into(3, 14, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_token_into(2, 14, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_set_into(&[(1, 1), (5, 5)], 15, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_token_into(4, 16, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_token_into(5, 17, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_token_into(6, 18, atn(), &mut __ctx, &mut __consumed_eof)?;
+            }
+            success {}
+            recovery {}
+        }
+    }
+
+    #[allow(dead_code)]
+    fn parse_generated_rule_2(&mut self, __precedence: i32, allow_fallback: bool) -> Result<antlr4_runtime::ParseTree, GeneratedRuleError> {
+        let _ = __precedence;
+        antlr4_runtime::__antlr4_rust_generated_rule! {
+            ordinary self, 4isize, 2, allow_fallback, atn(), GeneratedRuleError::Fatal;
+            retry [adaptive];
+            bind (__ctx, __rule_start, __consumed_eof, __sync_error);
+            setup {}
+            body {
             }
             success {}
             recovery {}
@@ -542,6 +609,9 @@ where
     }
     pub fn query(&mut self) -> Result<antlr4_runtime::ParseTree, antlr4_runtime::AntlrError> {
         self.parse_rule(1)
+    }
+    pub fn condition(&mut self) -> Result<antlr4_runtime::ParseTree, antlr4_runtime::AntlrError> {
+        self.parse_rule(2)
     }
 
 
