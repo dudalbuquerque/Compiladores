@@ -30,6 +30,7 @@ expressaoIn : value IN '(' value(',' value)*')';
 condition : NOT condition
           |condition AND condition
           | condition OR condition
+          | '(' condition ')'
           | expr
           | expressaoIn ;
 
