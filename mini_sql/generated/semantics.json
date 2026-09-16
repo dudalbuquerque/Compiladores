@@ -6,12 +6,12 @@
   "grammars": [
     {
       "kind": "lexer",
-      "name": "CalcLexer",
+      "name": "miniSQLLexer",
       "coordinates": []
     },
     {
       "kind": "parser",
-      "name": "CalcParser",
+      "name": "miniSQLParser",
       "coordinates": []
     }
   ]

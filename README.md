@@ -25,17 +25,20 @@ O escopo será definido antes da implementação da gramática, determinando qua
 
 ```text
 mini-sql/
+|── generated/
+│   └── código gerado pelo ANTLR
+│
 ├── grammar/
 │   └── SQL.g4
 │
-├── generated/
-│   └── código gerado pelo ANTLR
-│
 ├── src/
-│   └── main.rs  
+│   │── lib.rs
+│   └── main.rs
+│    
 │
 ├── tests/
 │   └── parser_tests.rs
 │
 ├── Cargo.toml  (Arquivo de configuração do projeto Rust)
+├── Cargo.lock
 └── README.md

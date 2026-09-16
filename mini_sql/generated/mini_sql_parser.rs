@@ -21,18 +21,38 @@ use antlr4_runtime::generated::{__ActiveParserContext, __FromActiveRuleContext, 
 
 
 pub const EOF: i32 = antlr4_runtime::TOKEN_EOF;
-pub const PLUS: i32 = 1;
-pub const NUMBER: i32 = 2;
-pub const WS: i32 = 3;
+pub const T__0: i32 = 1;
+pub const SELECT: i32 = 2;
+pub const WHERE: i32 = 3;
+pub const FROM: i32 = 4;
+pub const ID: i32 = 5;
+pub const END: i32 = 6;
+pub const NEWLINE: i32 = 7;
+pub const INT: i32 = 8;
+pub const FLOAT: i32 = 9;
+pub const STRING: i32 = 10;
+pub const BOOLEAN: i32 = 11;
+pub const EQUAL: i32 = 12;
+pub const NOT_EQUAL: i32 = 13;
+pub const LESS: i32 = 14;
+pub const LESS_EQUAL: i32 = 15;
+pub const GREATER: i32 = 16;
+pub const GREATER_EQUAL: i32 = 17;
+pub const AND: i32 = 18;
+pub const OR: i32 = 19;
+pub const IN: i32 = 20;
+pub const COMMENT: i32 = 21;
 
-pub const RULE_EXPRESSION: usize = 0;
+pub const RULE_PROGRAM: usize = 0;
+pub const RULE_QUERY: usize = 1;
+pub const RULE_CONDITION: usize = 2;
 
 pub static METADATA: GrammarMetadata = GrammarMetadata::new(
-    "CalcParser",
-    &["expression"],
-    &[None, Some("\'+\'"), None, None],
-    &[None, Some("PLUS"), Some("NUMBER"), Some("WS")],
-    &[None, None, None, None],
+    "miniSQLParser",
+    &["program", "query", "condition"],
+    &[None, Some("\'*\'"), Some("\'SELECT\'"), Some("\'WHERE\'"), Some("\'FROM\'"), None, Some("\';\'"), None, None, None, None, None, Some("\'=\'"), Some("\'!=\'"), Some("\'<\'"), Some("\'<=\'"), Some("\'>\'"), Some("\'>=\'"), Some("\'AND\'"), Some("\'OR\'"), Some("\'IN\'"), None],
+    &[None, None, Some("SELECT"), Some("WHERE"), Some("FROM"), Some("ID"), Some("END"), Some("NEWLINE"), Some("INT"), Some("FLOAT"), Some("STRING"), Some("BOOLEAN"), Some("EQUAL"), Some("NOT_EQUAL"), Some("LESS"), Some("LESS_EQUAL"), Some("GREATER"), Some("GREATER_EQUAL"), Some("AND"), Some("OR"), Some("IN"), Some("COMMENT")],
+    &[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None],
     &[],
     &[],
     &[],
@@ -79,9 +99,9 @@ pub struct ValidatedTreeContext {
 /// Alias of the runtime's grammar-agnostic `antlr4_runtime::ValidatedTree`
 /// branded with this module's [`ValidatedTreeContext`] marker, so validated
 /// trees of different grammars remain distinct types.
-pub type CalcValidatedTree = antlr4_runtime::ValidatedTree<ValidatedTreeContext>;
+pub type miniSQLValidatedTree = antlr4_runtime::ValidatedTree<ValidatedTreeContext>;
 
-/// A rule node borrowed from a [`CalcValidatedTree`].
+/// A rule node borrowed from a [`miniSQLValidatedTree`].
 ///
 /// Alias of the runtime's `antlr4_runtime::ValidatedRuleNode` branded with
 /// this module's [`ValidatedTreeContext`] marker.
@@ -94,7 +114,7 @@ pub use antlr4_runtime::FromValidatedRuleNode;
 /// Alias of the grammar-agnostic `antlr4_runtime::ValidationError`; unlike
 /// the branded tree types, the validation errors of every generated parser
 /// are deliberately one shared type.
-pub type CalcValidationError = antlr4_runtime::ValidationError;
+pub type miniSQLValidationError = antlr4_runtime::ValidationError;
 
 #[allow(dead_code)]
 fn __context_kind(context: RuleNodeView<'_>) -> usize {
@@ -111,7 +131,7 @@ fn __active_context_kind(
 }
 
 antlr4_runtime::__antlr4_rust_context! {
-    pub struct ExpressionContext {
+    pub struct ProgramContext {
         rule_index: 0,
         context_kind: any,
         validated_downcast: branded,
@@ -128,9 +148,57 @@ antlr4_runtime::__antlr4_rust_context! {
 }
 
 antlr4_runtime::__antlr4_rust_context_accessors! {
-    ExpressionContext {
-        token plus_token: required(1, "PLUS"),
-        token number_tokens: many(2),
+    ProgramContext {
+        rule query_children: many(QueryContext[1]),
+        token eof_token: required(-1, "EOF"),
+    }
+}
+
+antlr4_runtime::__antlr4_rust_context! {
+    pub struct QueryContext {
+        rule_index: 1,
+        context_kind: any,
+        validated_downcast: branded,
+        attributes: {
+        },
+        methods: {
+            rule_node: rule_node,
+            child_count: child_count,
+            direct_terminals: direct_terminals,
+            start: start,
+            text: text,
+        }
+    }
+}
+
+antlr4_runtime::__antlr4_rust_context_accessors! {
+    QueryContext {
+        token select_token: required(2, "SELECT"),
+        token from_token: required(4, "FROM"),
+        token id_tokens: many(5),
+        token end_token: required(6, "END"),
+    }
+}
+
+antlr4_runtime::__antlr4_rust_context! {
+    pub struct ConditionContext {
+        rule_index: 2,
+        context_kind: any,
+        validated_downcast: branded,
+        attributes: {
+        },
+        methods: {
+            rule_node: rule_node,
+            child_count: child_count,
+            direct_terminals: direct_terminals,
+            start: start,
+            text: text,
+        }
+    }
+}
+
+antlr4_runtime::__antlr4_rust_context_accessors! {
+    ConditionContext {
     }
 }
 
@@ -142,10 +210,10 @@ antlr4_runtime::__antlr4_rust_context_accessors! {
 /// failures can be diagnosed independently.
 pub fn validate_tree_structure(
     parsed: &antlr4_runtime::ParsedFile,
-) -> Result<(), CalcValidationError> {
+) -> Result<(), miniSQLValidationError> {
     let tree = parsed.tree();
     if tree.as_rule().is_none() {
-        return Err(CalcValidationError::InvalidRoot);
+        return Err(miniSQLValidationError::InvalidRoot);
     }
     for node in tree.descendants() {
         match node.kind() {
@@ -155,7 +223,7 @@ pub fn validate_tree_structure(
                     .as_error()
                     .expect("error node kind checked")
                     .symbol();
-                return Err(CalcValidationError::RecoveredErrorNode {
+                return Err(miniSQLValidationError::RecoveredErrorNode {
                     line: symbol.line(),
                     column: symbol.column(),
                     text: symbol.text_or_empty().to_owned(),
@@ -165,12 +233,21 @@ pub fn validate_tree_structure(
                 let context = node.as_rule().expect("rule node kind checked");
                 match __context_kind(context) {
                 0 => {
-                    let context = ExpressionContext::__from_listener_node(context, None);
-        context.plus_token()?;
-        antlr4_runtime::require_min_count(context.number_tokens().count(), 2, "ExpressionContext", "NUMBER")?;
+                    let context = ProgramContext::__from_listener_node(context, None);
+        antlr4_runtime::require_min_count(context.query_children().count(), 1, "ProgramContext", "query")?;
+        context.eof_token()?;
+                },
+                1 => {
+                    let context = QueryContext::__from_listener_node(context, None);
+        context.select_token()?;
+        context.from_token()?;
+        antlr4_runtime::require_min_count(context.id_tokens().count(), 1, "QueryContext", "ID")?;
+        context.end_token()?;
+                },
+                2 => {
                 },
                     _ => {
-                        return Err(CalcValidationError::UnknownRule {
+                        return Err(miniSQLValidationError::UnknownRule {
                             rule_index: context.rule_index(),
                         });
                     }
@@ -182,38 +259,46 @@ pub fn validate_tree_structure(
 }
 
 #[allow(dead_code, unused_variables)]
-pub trait CalcListener<E = std::convert::Infallible> {
+pub trait miniSQLListener<E = std::convert::Infallible> {
     fn walk(&mut self, tree: antlr4_runtime::Node<'_>) -> Result<(), E>
     where
         Self: Sized,
     {
-        CalcTreeWalker::walk(self, tree)
+        miniSQLTreeWalker::walk(self, tree)
     }
 
     fn enter_every_rule(&mut self, _ctx: RuleNodeView<'_>) -> Result<(), E> { Ok(()) }
     fn exit_every_rule(&mut self, _ctx: RuleNodeView<'_>) -> Result<(), E> { Ok(()) }
 
-    fn enter_expression(&mut self, _ctx: &ExpressionContext) -> Result<(), E> { Ok(()) }
-    fn exit_expression(&mut self, _ctx: &ExpressionContext) -> Result<(), E> { Ok(()) }
+    fn enter_program(&mut self, _ctx: &ProgramContext) -> Result<(), E> { Ok(()) }
+    fn exit_program(&mut self, _ctx: &ProgramContext) -> Result<(), E> { Ok(()) }
+    fn enter_query(&mut self, _ctx: &QueryContext) -> Result<(), E> { Ok(()) }
+    fn exit_query(&mut self, _ctx: &QueryContext) -> Result<(), E> { Ok(()) }
+    fn enter_condition(&mut self, _ctx: &ConditionContext) -> Result<(), E> { Ok(()) }
+    fn exit_condition(&mut self, _ctx: &ConditionContext) -> Result<(), E> { Ok(()) }
     fn visit_terminal(&mut self, _node: &TerminalNode) -> Result<(), E> { Ok(()) }
     fn visit_error_node(&mut self, _node: &ErrorNode) -> Result<(), E> { Ok(()) }
     fn output(&mut self) -> std::io::Stdout { std::io::stdout() }
 }
 
 antlr4_runtime::__antlr4_rust_generated_walk_callbacks! {
-    callbacks: __CalcTreeWalkerCallbacks,
-    listener: CalcListener,
+    callbacks: __miniSQLTreeWalkerCallbacks,
+    listener: miniSQLListener,
     enter: |listener, context, invocation_states| {
         listener.enter_every_rule(context)?;
         match __context_kind(context) {
-            0 => listener.enter_expression(&ExpressionContext::__from_listener_node(context, invocation_states))?,
+            0 => listener.enter_program(&ProgramContext::__from_listener_node(context, invocation_states))?,
+            1 => listener.enter_query(&QueryContext::__from_listener_node(context, invocation_states))?,
+            2 => listener.enter_condition(&ConditionContext::__from_listener_node(context, invocation_states))?,
             _ => {}
         }
         Ok(())
     },
     exit: |listener, context, invocation_states| {
         match __context_kind(context) {
-            0 => listener.exit_expression(&ExpressionContext::__from_listener_node(context, invocation_states))?,
+            0 => listener.exit_program(&ProgramContext::__from_listener_node(context, invocation_states))?,
+            1 => listener.exit_query(&QueryContext::__from_listener_node(context, invocation_states))?,
+            2 => listener.exit_condition(&ConditionContext::__from_listener_node(context, invocation_states))?,
             _ => {}
         }
         listener.exit_every_rule(context)
@@ -227,18 +312,18 @@ antlr4_runtime::__antlr4_rust_generated_walk_callbacks! {
 }
 
 #[allow(dead_code)]
-pub struct CalcTreeWalker;
+pub struct miniSQLTreeWalker;
 
 #[allow(dead_code)]
-impl CalcTreeWalker {
-    pub fn walk<E, T: CalcListener<E>>(
+impl miniSQLTreeWalker {
+    pub fn walk<E, T: miniSQLListener<E>>(
         listener: &mut T,
         tree: antlr4_runtime::Node<'_>,
     ) -> Result<(), E> {
         Self::__walk(listener, tree, None)
     }
 
-    pub fn walk_with_invocation_states<E, T: CalcListener<E>>(
+    pub fn walk_with_invocation_states<E, T: miniSQLListener<E>>(
         listener: &mut T,
         tree: antlr4_runtime::Node<'_>,
         parent_invocation_states: Vec<isize>,
@@ -246,50 +331,58 @@ impl CalcTreeWalker {
         Self::__walk(listener, tree, Some(parent_invocation_states))
     }
 
-    fn __walk<E, T: CalcListener<E>>(
+    fn __walk<E, T: miniSQLListener<E>>(
         listener: &mut T,
         tree: antlr4_runtime::Node<'_>,
         invocation_states: Option<Vec<isize>>,
     ) -> Result<(), E> {
-        let mut callbacks = __CalcTreeWalkerCallbacks(listener);
+        let mut callbacks = __miniSQLTreeWalkerCallbacks(listener);
         antlr4_runtime::generated::walk_generated(tree, invocation_states, &mut callbacks)
     }
 }
 
-pub type ParseTreeWalker = CalcTreeWalker;
+pub type ParseTreeWalker = miniSQLTreeWalker;
 
 #[allow(dead_code, unused_variables)]
-pub trait CalcValidatedListener<E = std::convert::Infallible> {
+pub trait miniSQLValidatedListener<E = std::convert::Infallible> {
     fn walk(&mut self, tree: ValidatedRuleNode<'_>) -> Result<(), E>
     where
         Self: Sized,
     {
-        CalcValidatedTreeWalker::walk(self, tree)
+        miniSQLValidatedTreeWalker::walk(self, tree)
     }
 
     fn enter_every_rule(&mut self, _ctx: ValidatedRuleNode<'_>) -> Result<(), E> { Ok(()) }
     fn exit_every_rule(&mut self, _ctx: ValidatedRuleNode<'_>) -> Result<(), E> { Ok(()) }
 
-    fn enter_expression(&mut self, _ctx: &ExpressionContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
-    fn exit_expression(&mut self, _ctx: &ExpressionContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
+    fn enter_program(&mut self, _ctx: &ProgramContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
+    fn exit_program(&mut self, _ctx: &ProgramContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
+    fn enter_query(&mut self, _ctx: &QueryContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
+    fn exit_query(&mut self, _ctx: &QueryContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
+    fn enter_condition(&mut self, _ctx: &ConditionContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
+    fn exit_condition(&mut self, _ctx: &ConditionContext<ValidatedTreeContext>) -> Result<(), E> { Ok(()) }
     fn visit_terminal(&mut self, _node: &TerminalNode) -> Result<(), E> { Ok(()) }
     fn output(&mut self) -> std::io::Stdout { std::io::stdout() }
 }
 
 antlr4_runtime::__antlr4_rust_generated_walk_callbacks! {
-    callbacks: __CalcValidatedTreeWalkerCallbacks,
-    listener: CalcValidatedListener,
+    callbacks: __miniSQLValidatedTreeWalkerCallbacks,
+    listener: miniSQLValidatedListener,
     enter: |listener, context, invocation_states| {
         listener.enter_every_rule(ValidatedRuleNode::__new(context))?;
         match __context_kind(context) {
-            0 => listener.enter_expression(&ExpressionContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
+            0 => listener.enter_program(&ProgramContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
+            1 => listener.enter_query(&QueryContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
+            2 => listener.enter_condition(&ConditionContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
             _ => {}
         }
         Ok(())
     },
     exit: |listener, context, invocation_states| {
         match __context_kind(context) {
-            0 => listener.exit_expression(&ExpressionContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
+            0 => listener.exit_program(&ProgramContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
+            1 => listener.exit_query(&QueryContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
+            2 => listener.exit_condition(&ConditionContext::<ValidatedTreeContext>::__from_validated_listener_node(context, invocation_states))?,
             _ => {}
         }
         listener.exit_every_rule(ValidatedRuleNode::__new(context))
@@ -303,18 +396,18 @@ antlr4_runtime::__antlr4_rust_generated_walk_callbacks! {
 }
 
 #[allow(dead_code)]
-pub struct CalcValidatedTreeWalker;
+pub struct miniSQLValidatedTreeWalker;
 
 #[allow(dead_code)]
-impl CalcValidatedTreeWalker {
-    pub fn walk<E, T: CalcValidatedListener<E>>(
+impl miniSQLValidatedTreeWalker {
+    pub fn walk<E, T: miniSQLValidatedListener<E>>(
         listener: &mut T,
         tree: ValidatedRuleNode<'_>,
     ) -> Result<(), E> {
         Self::__walk(listener, tree.node(), None)
     }
 
-    pub fn walk_with_invocation_states<E, T: CalcValidatedListener<E>>(
+    pub fn walk_with_invocation_states<E, T: miniSQLValidatedListener<E>>(
         listener: &mut T,
         tree: ValidatedRuleNode<'_>,
         parent_invocation_states: Vec<isize>,
@@ -322,21 +415,21 @@ impl CalcValidatedTreeWalker {
         Self::__walk(listener, tree.node(), Some(parent_invocation_states))
     }
 
-    fn __walk<E, T: CalcValidatedListener<E>>(
+    fn __walk<E, T: miniSQLValidatedListener<E>>(
         listener: &mut T,
         tree: antlr4_runtime::Node<'_>,
         invocation_states: Option<Vec<isize>>,
     ) -> Result<(), E> {
-        let mut callbacks = __CalcValidatedTreeWalkerCallbacks(listener);
+        let mut callbacks = __miniSQLValidatedTreeWalkerCallbacks(listener);
         antlr4_runtime::generated::walk_generated(tree, invocation_states, &mut callbacks)
     }
 }
 
-pub type ValidatedParseTreeWalker = CalcValidatedTreeWalker;
+pub type ValidatedParseTreeWalker = miniSQLValidatedTreeWalker;
 
 
 
-static PARSER_ATN_DATA: &[u32] = &[1346458702, 3, 16909060, 29, 3, 7, 5, 0, 0, 0, 1, 29, 49, 78, 25, 103, 0, 103, 0, 103, 0, 103, 1, 104, 1, 105, 0, 103, 0, 2, 0, 8, 0, 1, 4294967295, 4294967295, 7, 0, 16, 1, 0, 4294967295, 4294967295, 1, 0, 32, 1, 1, 4294967295, 4294967295, 1, 0, 32, 2, 1, 4294967295, 4294967295, 1, 0, 32, 3, 1, 4294967295, 4294967295, 1, 0, 8, 4, 1, 4294967295, 4294967295, 1, 0, 0, 5, 0, 4294967295, 4294967295, 1, 2, 0, 0, 0, 5, 3, 2, 0, 0, 5, 4, 1, 0, 0, 5, 5, 2, 0, 0, 1, 1, 0, 0, 0, 0, 1];
+static PARSER_ATN_DATA: &[u32] = &[1346458702, 3, 16909060, 29, 21, 22, 20, 1, 2, 1, 3, 29, 154, 183, 100, 283, 5, 288, 4, 296, 1, 297, 3, 300, 3, 303, 2, 292, 4, 2, 0, 8, 0, 1, 4294967295, 4294967295, 7, 0, 16, 1, 0, 4294967295, 4294967295, 2, 1, 8, 1, 1, 4294967295, 4294967295, 7, 1, 24, 2, 1, 4294967295, 4294967295, 2, 2, 8, 3, 1, 4294967295, 4294967295, 7, 2, 16, 4, 0, 4294967295, 4294967295, 1, 0, 8, 4, 1, 4294967295, 4294967295, 4, 0, 8, 5, 1, 8, 4294967295, 8, 0, 8, 6, 1, 4294967295, 4294967295, 11, 0, 8, 7, 2, 4294967295, 4294967295, 12, 0, 8, 9, 1, 4294967295, 9, 1, 0, 32, 10, 1, 4294967295, 4294967295, 1, 0, 8, 11, 1, 4294967295, 4294967295, 1, 1, 32, 12, 1, 4294967295, 4294967295, 1, 1, 32, 13, 1, 4294967295, 4294967295, 1, 1, 32, 14, 1, 4294967295, 4294967295, 1, 1, 32, 15, 1, 4294967295, 4294967295, 1, 1, 32, 16, 1, 4294967295, 4294967295, 1, 1, 8, 17, 1, 4294967295, 4294967295, 1, 2, 8, 18, 1, 4294967295, 4294967295, 1, 2, 8, 19, 1, 4294967295, 4294967295, 1, 2, 0, 20, 0, 4294967295, 4294967295, 1, 7, 0, 0, 0, 1, 13, 0, 0, 0, 1, 8, 0, 0, 0, 1, 19, 0, 0, 0, 3, 2, 1, 8, 0, 1, 6, 0, 0, 0, 1, 9, 0, 0, 0, 1, 7, 0, 0, 0, 1, 10, 0, 0, 0, 1, 11, 0, 0, 0, 5, 12, 4294967295, 0, 0, 1, 1, 0, 0, 0, 5, 14, 2, 0, 0, 7, 15, 0, 0, 0, 5, 16, 4, 0, 0, 5, 17, 5, 0, 0, 5, 18, 6, 0, 0, 1, 3, 0, 0, 0, 1, 20, 0, 0, 0, 1, 5, 0, 0, 0, 0, 2, 1, 0, 2, 1, 1, 5, 5, 34, 0, 0, 0, 9, 0, 2, 4, 1, 3, 5];
 static ATN_CELL: OnceLock<ParserAtn> = OnceLock::new();
 
 /// Validates and caches the packed grammar ATN for all parser instances.
@@ -353,10 +446,10 @@ pub fn parser_atn() -> &'static ParserAtn {
 }
 
 antlr4_runtime::__antlr4_rust_parser_entry_points! {
-    parser: CalcParser,
-    output: CalcParserParseOutput,
-    validated_tree: CalcValidatedTree,
-    validation_error: CalcValidationError,
+    parser: MiniSqlParser,
+    output: MiniSqlParserParseOutput,
+    validated_tree: miniSQLValidatedTree,
+    validation_error: miniSQLValidationError,
     validate_tree: validate_tree_structure,
 }
 
@@ -370,12 +463,15 @@ antlr4_runtime::__antlr4_rust_parser_entry_points! {
 /// between multiple candidates.
 ///
 /// Likely parser entry-rule methods:
-/// - `expression()`
+/// - `program()`
+/// - `condition()`
 ///
 /// All parser rule methods:
-/// - `expression()`
+/// - `program()`
+/// - `query()`
+/// - `condition()`
 #[derive(Debug)]
-pub struct CalcParser<L, H = antlr4_runtime::NoSemanticHooks>
+pub struct MiniSqlParser<L, H = antlr4_runtime::NoSemanticHooks>
 where
     L: TokenSource,
     H: antlr4_runtime::SemanticHooks,
@@ -386,7 +482,7 @@ where
     adaptive_atn: antlr4_runtime::generated::AdaptiveAtnRetryState<0>,
 }
 
-impl<L> CalcParser<L, antlr4_runtime::NoSemanticHooks>
+impl<L> MiniSqlParser<L, antlr4_runtime::NoSemanticHooks>
 where
     L: TokenSource,
 {
@@ -395,7 +491,7 @@ where
     }
 }
 
-impl<L, H> CalcParser<L, H>
+impl<L, H> MiniSqlParser<L, H>
 where
     L: TokenSource,
     H: antlr4_runtime::SemanticHooks,
@@ -412,8 +508,10 @@ where
         }
     }
 
-    const __GENERATED_RULE_BODIES: [Option<antlr4_runtime::generated::GeneratedRuleBody<Self>>; 1] = [
+    const __GENERATED_RULE_BODIES: [Option<antlr4_runtime::generated::GeneratedRuleBody<Self>>; 3] = [
         Some(Self::parse_generated_rule_0),
+        Some(Self::parse_generated_rule_1),
+        Some(Self::parse_generated_rule_2),
     ];
 
     #[allow(dead_code)]
@@ -440,9 +538,64 @@ where
             bind (__ctx, __rule_start, __consumed_eof, __sync_error);
             setup {}
             body {
-                self.base.match_token_into(2, 3, atn(), &mut __ctx, &mut __consumed_eof)?;
-                self.base.match_token_into(1, 4, atn(), &mut __ctx, &mut __consumed_eof)?;
-                self.base.match_token_into(2, 5, atn(), &mut __ctx, &mut __consumed_eof)?;
+                antlr4_runtime::__antlr4_rust_invoke_subrule!(self, 6isize, self.dispatch_generated_rule(1, 0, false).map_err(GeneratedRuleError::into_error), __ctx);
+                let mut __loop_iter_9 = true;
+                loop {
+                    self.base.sync_into(atn(), 9, &mut __ctx, __loop_iter_9, &mut __sync_error)?;
+                    let __decision_start = antlr4_runtime::IntStream::index(self.base.input());
+                    let __prediction = match self.base.la(1) {
+                        2 => antlr4_runtime::ParserAtnPrediction { alt: 1, requires_full_context: false, has_semantic_context: false, diagnostic: None },
+                        -1 => antlr4_runtime::ParserAtnPrediction { alt: 2, requires_full_context: false, has_semantic_context: false, diagnostic: None },
+                        _ => return Err(self.base.no_viable_alternative_error(__decision_start)),
+                    };
+                    self.base.record_generated_prediction_diagnostic(atn(), 9, &__prediction);
+                    match __prediction.alt {
+                        1 => {
+                            __loop_iter_9 = true;
+                            antlr4_runtime::__antlr4_rust_invoke_subrule!(self, 6isize, self.dispatch_generated_rule(1, 0, false).map_err(GeneratedRuleError::into_error), __ctx);
+                        }
+                        2 => {
+                            break;
+                        }
+                        _ => return Err(self.base.no_viable_alternative_error(__decision_start)),
+                    }
+                }
+                self.base.match_token_into(-1, 12, atn(), &mut __ctx, &mut __consumed_eof)?;
+            }
+            success {}
+            recovery {}
+        }
+    }
+
+    #[allow(dead_code)]
+    fn parse_generated_rule_1(&mut self, __precedence: i32, allow_fallback: bool) -> Result<antlr4_runtime::ParseTree, GeneratedRuleError> {
+        let _ = __precedence;
+        antlr4_runtime::__antlr4_rust_generated_rule! {
+            ordinary self, 2isize, 1, allow_fallback, atn(), GeneratedRuleError::Fatal;
+            retry [adaptive];
+            bind (__ctx, __rule_start, __consumed_eof, __sync_error);
+            setup {}
+            body {
+                self.base.match_token_into(2, 14, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_set_into(&[(1, 1), (5, 5)], 15, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_token_into(4, 16, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_token_into(5, 17, atn(), &mut __ctx, &mut __consumed_eof)?;
+                self.base.match_token_into(6, 18, atn(), &mut __ctx, &mut __consumed_eof)?;
+            }
+            success {}
+            recovery {}
+        }
+    }
+
+    #[allow(dead_code)]
+    fn parse_generated_rule_2(&mut self, __precedence: i32, allow_fallback: bool) -> Result<antlr4_runtime::ParseTree, GeneratedRuleError> {
+        let _ = __precedence;
+        antlr4_runtime::__antlr4_rust_generated_rule! {
+            ordinary self, 4isize, 2, allow_fallback, atn(), GeneratedRuleError::Fatal;
+            retry [adaptive];
+            bind (__ctx, __rule_start, __consumed_eof, __sync_error);
+            setup {}
+            body {
             }
             success {}
             recovery {}
@@ -451,8 +604,14 @@ where
 
 
 
-    pub fn expression(&mut self) -> Result<antlr4_runtime::ParseTree, antlr4_runtime::AntlrError> {
+    pub fn program(&mut self) -> Result<antlr4_runtime::ParseTree, antlr4_runtime::AntlrError> {
         self.parse_rule(0)
+    }
+    pub fn query(&mut self) -> Result<antlr4_runtime::ParseTree, antlr4_runtime::AntlrError> {
+        self.parse_rule(1)
+    }
+    pub fn condition(&mut self) -> Result<antlr4_runtime::ParseTree, antlr4_runtime::AntlrError> {
+        self.parse_rule(2)
     }
 
 
@@ -461,7 +620,7 @@ where
 }
 
 antlr4_runtime::__antlr4_rust_parser_driver! {
-    type: CalcParser<L, H>,
+    type: MiniSqlParser<L, H>,
     fields: {
         base: base,
         simulator: simulator,
@@ -476,7 +635,7 @@ antlr4_runtime::__antlr4_rust_parser_driver! {
 
 
 antlr4_runtime::__antlr4_rust_parser_facade! {
-    type: CalcParser<L, H>,
+    type: MiniSqlParser<L, H>,
     fields: {
         base: base,
         simulator: simulator,
