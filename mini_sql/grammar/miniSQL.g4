@@ -1,4 +1,7 @@
-grammar MiniSQL;
+grammar miniSQL;
+
+options { caseInsensitive = true; }
+
 
 
 // () obrigatório
@@ -18,10 +21,17 @@ query : SELECT selectList FROM ID (WHERE condition)? END;
 selectList : ID (',' ID)*
            | '*' ;
 
+// permite IN no WHERE
+expressaoIn : value IN '(' value(',' value)*')';
+
 
 // Suporta condições encadeadas por AND / OR (ex: a = 1 AND b > 2)
-condition : condition (AND | OR) condition
-          | expr ;
+// mas eles nâo podem ficar na mesma linha, SQL tem preferência pelo AND
+condition : NOT condition
+          |condition AND condition
+          | condition OR condition
+          | expr
+          | expressaoIn ;
 
 expr : left=value op=(EQUAL | NOT_EQUAL | LESS | LESS_EQUAL | GREATER | GREATER_EQUAL) right=value;
 
@@ -44,30 +54,32 @@ SELECT : 'SELECT' ;
 WHERE : 'WHERE' ;
 FROM : 'FROM' ;
 
+
+// operadores lógicos, precisam estar antes do ID por regra do lexer
+AND : 'AND' ;
+OR : 'OR' ;
+IN: 'IN' ;
+NOT: 'NOT';
+
 // types e id
-ID : [a-zA-Z_] [a-zA-Z0-9_]* ;  // [] = carcter, pode começar com _
+BOOLEAN : 'TRUE' | 'FALSE' ;
+ID : [a-z_] [a-z0-9_]* ; // [] = carcter, pode começar com _
 INT : '-'? DIGIT+ ;
 FLOAT : '-'? DIGIT+ '.' DIGIT+ ;
-STRING : '"' ~["]* '"' ;
-BOOLEAN : 'TRUE' | 'FALSE' ;
+STRING : '\'' ~['\r\n]* '\'' ;
+
 
 //operators comparação
 EQUAL : '=' ;
-NOT_EQUAL : '!=' ;
+NOT_EQUAL : '!=' | '<>' ;
 LESS : '<' ;
 LESS_EQUAL : '<=' ;
 GREATER : '>' ;
 GREATER_EQUAL : '>=' ;
 
-// operadores lógicos
-AND : 'AND' ;
-OR : 'OR' ;
-IN: 'IN' ;
-
-
-
 END: ';';
-NEWLINE : [\r\n]+ -> skip ;
+// ws
+NEWLINE : [ \t\r\n]+ -> skip ;
 
 // fragment
 // Um fragment não gera um token sozinho. Ele serve como um pedaço reutilizável para construir outros tokens.

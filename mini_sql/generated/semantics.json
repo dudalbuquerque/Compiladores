@@ -2,7 +2,15 @@
   "version": 2,
   "policy": "assume-true",
   "note": "unknown coordinates currently default to assume-true; a future minor release changes the default to error",
-  "options": [],
+  "options": [
+    {
+      "name": "caseInsensitive",
+      "value": "true",
+      "line": 3,
+      "column": 10,
+      "disposition": "metadata"
+    }
+  ],
   "grammars": [
     {
       "kind": "lexer",
@@ -12,7 +20,20 @@
     {
       "kind": "parser",
       "name": "miniSQLParser",
-      "coordinates": []
+      "coordinates": [
+        {
+          "kind": "parser-action",
+          "rule": "condition",
+          "rule_index": 4,
+          "index": 0,
+          "atn_state": 55,
+          "line": null,
+          "column": null,
+          "body": null,
+          "disposition": "synthetic",
+          "template": null
+        }
+      ]
     }
   ]
 }
