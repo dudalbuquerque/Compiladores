@@ -5,18 +5,73 @@
     {
       "name": "miniSQLParser",
       "summary": {
-        "total": 1,
-        "ll1": 1,
+        "total": 8,
+        "ll1": 5,
         "fixed": 0,
-        "adaptive": 0
+        "adaptive": 3
       },
       "decisions": [
         {
           "decision": 0,
           "rule": "program",
-          "state": 9,
+          "state": 17,
           "canDefer": false,
           "tier": "ll1"
+        },
+        {
+          "decision": 1,
+          "rule": "query",
+          "state": 27,
+          "canDefer": false,
+          "tier": "ll1"
+        },
+        {
+          "decision": 2,
+          "rule": "selectList",
+          "state": 36,
+          "canDefer": false,
+          "tier": "ll1"
+        },
+        {
+          "decision": 3,
+          "rule": "selectList",
+          "state": 40,
+          "canDefer": false,
+          "tier": "ll1"
+        },
+        {
+          "decision": 4,
+          "rule": "expressaoIn",
+          "state": 50,
+          "canDefer": false,
+          "tier": "ll1"
+        },
+        {
+          "decision": 5,
+          "rule": "condition",
+          "state": 60,
+          "canDefer": true,
+          "tier": "adaptive",
+          "reason": "not-disjoint",
+          "probedLookahead": 1
+        },
+        {
+          "decision": 6,
+          "rule": "condition",
+          "state": 68,
+          "canDefer": true,
+          "tier": "adaptive",
+          "reason": "predicate",
+          "probedLookahead": 1
+        },
+        {
+          "decision": 7,
+          "rule": "condition",
+          "state": 70,
+          "canDefer": true,
+          "tier": "adaptive",
+          "reason": "precedence",
+          "probedLookahead": 0
         }
       ]
     }
