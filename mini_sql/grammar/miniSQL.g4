@@ -64,7 +64,7 @@ NOT: 'NOT';
 
 // types e id
 BOOLEAN : 'TRUE' | 'FALSE' ;
-ID : [a-z_] [a-z0-9_]* ; // [] = carcter, pode começar com _
+ID : [a-z] [a-z0-9_]* ;
 INT : '-'? DIGIT+ ;
 FLOAT : '-'? DIGIT+ '.' DIGIT+ ;
 STRING : '\'' ~['\r\n]* '\'' ;
